@@ -30,19 +30,22 @@ def target_reached_action():
     print("Target position reached! Executing action...")
 
 
-def monitor_position(function, target_x, target_y):
+def monitor_position(target_x, target_y, function):
     while True:
         x, y = get_position()
 
         # Check if the current position matches the target position
         if x is not None and y is not None and is_in_proximity(x, target_x) and is_in_proximity(y, target_y):
-            function
+            print(is_in_proximity(x, target_x))
+            function()
             break  # Exit the loop once the target is reached
 
         # Wait for 5 seconds before checking again
         time.sleep(5)
 
+
 def is_in_proximity(pos1, pos2):
-    if pos1 - pos2 < 30 or pos1 - pos2 > -30:
+    print(pos1, pos2)
+    if 30 > pos1 - pos2 > -30:
         return True
     return False

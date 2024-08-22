@@ -6,4 +6,4 @@ def print_hi(name):
 
 
 if __name__ == '__main__':
-    eisen_auto_farm.farm()
+    eisen_auto_farm.AutoFarm().farm()
