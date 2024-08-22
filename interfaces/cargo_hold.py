@@ -19,9 +19,9 @@ class CargoHoldAPI:
             print(data["error"])
         else:
             print("Status des Cargo Holds:")
-            print(f"Credits: {data['credits']}")
-            print(f"Gesamtkapazität: {data['hold_size']}")
-            print(f"Freie Kapazität: {data['hold_free']}")
+            print(f"Credits: {data['hold']['credits']}")
+            print(f"Gesamtkapazität: {data['hold']['hold_size']}")
+            print(f"Freie Kapazität: {data['hold']['hold_free']}")
             print("Ressourcen im Lager:")
             for resource, amount in data["hold"]["resources"].items():
                 print(f"{resource}: {amount}")
