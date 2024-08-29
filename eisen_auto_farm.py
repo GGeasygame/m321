@@ -1,5 +1,5 @@
-import resource
-import navigation
+import interfaces.navigation as navigation
+import interfaces.resource as resource
 from stations import Station
 import drive_to
 import interfaces.cargo_hold
