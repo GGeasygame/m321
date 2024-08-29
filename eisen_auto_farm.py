@@ -13,10 +13,15 @@ class AutoFarm:
         while True:
             request_json = self.cargo.get_cargo_hold_status()
             self.cargo.display_status()
+
             if request_json["hold"]["hold_free"] > 0:
                 drive_to.set_target(Station.VESTA_STATION.value.get("x"), Station.VESTA_STATION.value.get("y"))
                 navigation.monitor_position(Station.VESTA_STATION.value.get("x"), Station.VESTA_STATION.value.get("y"),
                                             self.buy_iron)
+                drive_to.set_target(Station.CORE_STATION.value.get("x"), Station.CORE_STATION.value.get("y"))
+                navigation.monitor_position(Station.CORE_STATION.value.get("x"), Station.CORE_STATION.value.get("y"),
+                                            self.sell_iron)
+            else:
                 drive_to.set_target(Station.CORE_STATION.value.get("x"), Station.CORE_STATION.value.get("y"))
                 navigation.monitor_position(Station.CORE_STATION.value.get("x"), Station.CORE_STATION.value.get("y"),
                                             self.sell_iron)
