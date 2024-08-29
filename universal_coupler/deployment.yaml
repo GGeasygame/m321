@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  namespace: theship-vendor
+  labels:
+    app: api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: api-server-container
+        image: ggeasygame/universal_coupler:latest
+        ports:
+        - containerPort: 2023
+        env:
+        - name: FLASK_ENV
+          value: production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server-service
+  namespace: theship-vendor
+spec:
+  selector:
+    app: api-server
+  ports:
+    - protocol: TCP
+      port: 2023
+      targetPort: 2023
+  type: LoadBalancer  # Change to ClusterIP if you only need internal access
