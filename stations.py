@@ -7,3 +7,5 @@ class Station(Enum):
     CORE_STATION = {"x": 0, "y": 0, "name": "Core Station"}
     AZURA_STATION = {"x": -1000, "y": 1000, "name": "Azura Station"}
     STATION_19_A = {"x": -15526, "y": -12527, "name": "Station 19-A"}
+    SHANGRIS_STATION = {"x": 4143, "y": 4808, "name": "Shangris Station"}
+    GOLD_STONE = {"x": -10200, "y": 20700, "name": "Gold Stone"}

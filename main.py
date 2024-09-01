@@ -1,5 +1,5 @@
 import eisen_auto_farm
-import eisen_auto_farm_2d
+import autofarm_2d
 import follow_station
 
 
@@ -8,4 +8,4 @@ def print_hi(name):
 
 
 if __name__ == '__main__':
-    eisen_auto_farm_2d.AutoFarm().farm()
+    autofarm_2d.AutoFarm().farm_gold()

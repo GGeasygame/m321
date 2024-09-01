@@ -14,11 +14,16 @@ def get_position():
         data = response.json()
 
         # Ensure the response contains the necessary fields
-        if "pos" in data and "x" in data["pos"] and "y" in data["pos"]:
+        if "pos" in data and "x" in data["pos"] and "y" in data["pos"] and "angle" in data["pos"]:
             x = data["pos"]["x"]
             y = data["pos"]["y"]
-            print(f"Position - x: {x}, y: {y}")
-            return {x, y}
+            angle = data["pos"]["angle"]
+            print(f"Position - x: {x}, y: {y}, angle: {angle}")
+            return {
+                "x": x,
+                "y": y,
+                "angle": angle
+            }
         else:
             print("The response does not contain 'pos' or 'x' and 'y' coordinates.")
     else:
@@ -32,8 +37,9 @@ def target_reached_action():
 
 def monitor_position(target_x, target_y, function):
     while True:
-        x, y = get_position()
-
+        pos = get_position()
+        x = pos['x']
+        y = pos['y']
         # Check if the current position matches the target position
         if x is not None and y is not None and is_in_proximity(x, target_x) and is_in_proximity(y, target_y):
             print(is_in_proximity(x, target_x))
