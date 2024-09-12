@@ -7,10 +7,10 @@ class Station(Enum):
     CORE_STATION = {"x": 0, "y": 0, "name": "Core Station"}
     AZURA_STATION = {"x": -1000, "y": 1000, "name": "Azura Station"}
     STATION_19_A = {"x": -15526, "y": -12527, "name": "Station 19-A"}
-    STATION_19_B = {"x": -6074, "y": 18868, "name": "Station 19-B"}
-    SHANGRIS_STATION = {"x": 4639, "y": -4919, "name": "Shangris Station"}
-    GOLD_STONE = {"x": -10200, "y": 20700, "name": "Gold Stone"}
-    ARAK_STATION = {"x": 2712, "y": -4044, "name": "Arak Stone"}
+    SHANGRIS_STATION = {"x": 4143, "y": 4808, "name": "Shangris Station"}
+    GOLD_STONE = {"x": -9800, "y": 20200, "name": "Gold Stone"}
     ARTEMIS_STATION = {"x": -20000, "y": 38000, "name": "Artemis Station"}
+    STATION_19_B = {"x": -6074, "y": 18868, "name": "Station 19-B"}
+    ARAK_STATION = {"x": 2712, "y": -4044, "name": "Arak Stone"}
     ARCHITECT_COLONY = {"x": -48777, "y": -51374, "name": "Architect Colony"}
     PLATIN_MOUNTAIN = {"x": 50350, "y": 77700, "name": "Platin Mountain"}
