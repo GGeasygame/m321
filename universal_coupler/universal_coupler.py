@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import requests
 import xmlrpc.client
 import json
-from typing import List, Tuple
+from xmlrpc.client import Binary
 import base64
 
 app = Flask(__name__)
@@ -21,69 +21,58 @@ ARTEMIS_STATION = {"x": -20000, "y": 38000, "name": "Artemis Station"}
 
 @app.route('/<station_name>/receive', methods=['POST'])
 def receive_data(station_name):
-    if station_name == ARTEMIS_STATION.get('name'):
-        url = 'http://192.168.100.19:2024/RPC2'
-        client = xmlrpc.client.ServerProxy(url)
-        try:
-            data = client.receive()
+    try:
+        if station_name == ARTEMIS_STATION['name']:
+            return __artemis_interface_receive(AZURA_STATION)
+    except Exception as e:
+        return {"status": "Error", "message": f"{e}"}
 
-            return jsonify(convert_to_json_format(data))
-        except Exception as e:
-            return jsonify({"status": "Error retrieving data", "message": str(e)}), 500
-    return jsonify({"status": "Error", "message": "Station not found"}), 404
+    return {"status": "Error", "message": "Station not found"}
 
 
 @app.route('/<station_name>/send', methods=['POST'])
-def send_data(station_name):
+def send(station_name):
     # Extract data from the request
-    data = request.get_json()
+    data = request.get_json(force=True)
 
     if not data or 'source' not in data or 'data' not in data:
-        return jsonify({"status": "Invalid request data"}), 400
+        return {"status": "Invalid request data"}
 
-    if station_name == AZURA_STATION.get("name"):
-        base64_data = base64.b64encode(data['data'].encode('utf-8')).decode('utf-8')
-        payload = {
-            "sending_station": data['source'],
-            "base64data": base64_data
-        }
-        try:
-            response = requests.post("http://192.168.100.19:2030/put_message", json=payload)
-            if response.status_code == 200:
-                return jsonify({"status": "Data sent successfully"}), 200
-            else:
-                return jsonify({"status": "Error sending data", "message": response.text}), 500
-        except requests.RequestException as e:
-            return jsonify({"status": "Error sending data", "message": str(e)}), 500
+    try:
+        if station_name == AZURA_STATION['name']:
+            return __azura_interface_send(data['source'], data['data'])
+    except Exception as e:
+        return {"status": "Error sending data", "message": str(e)}
 
-    return jsonify({"status": "Error", "message": "Station not found"}), 404
+    return {"status": "Error", "message": "Station not found"}
 
 
-from typing import List, Tuple, Union
+def __artemis_interface_receive(destination_station):
+    server_url = "http://192.168.100.19:2024/RPC2"
+    proxy = xmlrpc.client.ServerProxy(server_url)
 
+    response_receive = proxy.receive()
 
-def convert_to_json_format(data: Union[List[Tuple[str, bytearray]], Tuple[str, bytearray]]) -> dict:
     messages = []
+    for destination, data in response_receive:
+        if destination == destination_station['name']:
+            if isinstance(data, xmlrpc.client.Binary):
+                data = data.data
+            json_string = json.dumps(json.loads(data.decode('utf-8')))
+            json_bytes = json_string.encode('utf-8')
+            json_bytearray = bytearray(json_bytes)
+            messages.append({"destination": destination_station['name'], "data": list(json_bytearray)})
+    return {"kind": "success", "messages": messages}
 
-    # Check if data is a single tuple or a list of tuples
-    if isinstance(data, tuple):
-        data = [data]  # Convert single tuple to a list of one tuple
 
-    for destination, byte_data in data:
-        # Convert ByteArray to a list of integers
-        byte_list = list(byte_data)
-        messages.append({
-            "destination": destination,
-            "data": byte_list
-        })
-
-    result = {
-        "kind": "success",
-        "messages": messages
-    }
-
-    return result
+def __azura_interface_send(source_station, msg):
+    base64_encoded = base64.b64encode(bytearray(msg))
+    base64_string = base64_encoded.decode('utf-8')
+    data = {"sending_station": source_station, "base64data": base64_string}
+    print(data)
+    requests.post(f"http://192.168.100.19:2030/put_message", json=data)
+    return {"kind": "success"}
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=2023)
+    app.run(host='0.0.0.0', port=2023, debug=True)

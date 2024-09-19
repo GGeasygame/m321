@@ -13,5 +13,6 @@ try:
     print("Received messages:")
     for destination, message in messages:
         print(f"Destination: {destination}, Message: {message}")
+    print(f"raw message: {messages}")
 except Exception as e:
     print(f"Error in receive: {e}")
