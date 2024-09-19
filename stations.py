@@ -16,4 +16,5 @@ class Station(Enum):
     PLATIN_MOUNTAIN = {"x": 50350, "y": 77700, "name": "Platin Mountain"}
     PHANTOM_STATION = {"x": -60000, "y": 9000, "name": "Phantom Station"}
     ELYSE_TERMINAL =  {"x": 72701, "y": -78179, "name": "Elyse Terminal"}
-    CHRON = {"x": 40100, "y": 53134, "name": "Chron"}
+    CHRON = {"x": 40000, "y": 53034, "name": "Chron"}
+    NUKU_STATION = {"x": -94108, "y": 95822, "name": "Nuku Station"}
