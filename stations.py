@@ -14,3 +14,4 @@ class Station(Enum):
     ARAK_STATION = {"x": 2712, "y": -4044, "name": "Arak Stone"}
     ARCHITECT_COLONY = {"x": -48777, "y": -51374, "name": "Architect Colony"}
     PLATIN_MOUNTAIN = {"x": 50350, "y": 77700, "name": "Platin Mountain"}
+    PHANTOM_STATION = {"x": -60000, "y": 9000, "name": "Phantom Station"}
