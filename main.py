@@ -8,4 +8,4 @@ def print_hi(name):
 
 
 if __name__ == '__main__':
-    autofarm_2d.AutoFarm().farm_gold()
+    autofarm_2d.AutoFarm().farm_platin()
