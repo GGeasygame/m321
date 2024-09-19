@@ -69,16 +69,16 @@ class AutoFarm:
                 navigation.monitor_position(Station.PLATIN_MOUNTAIN.value.get("x"),
                                             Station.PLATIN_MOUNTAIN.value.get("y"),
                                             miner.mine)
-                drive_to.set_target(Station.CORE_STATION.value.get("x"),
-                                    Station.CORE_STATION.value.get("y"))
-                navigation.monitor_position(Station.CORE_STATION.value.get("x"),
-                                            Station.CORE_STATION.value.get("y"),
+                drive_to.set_target(Station.ELYSE_TERMINAL.value.get("x"),
+                                    Station.ELYSE_TERMINAL.value.get("y"))
+                navigation.monitor_position(Station.ELYSE_TERMINAL.value.get("x"),
+                                            Station.ELYSE_TERMINAL.value.get("y"),
                                             self.sell_stone_and_gold_and_platin)
             else:
-                drive_to.set_target(Station.CORE_STATION.value.get("x"),
-                                    Station.CORE_STATION.value.get("y"))
-                navigation.monitor_position(Station.CORE_STATION.value.get("x"),
-                                            Station.CORE_STATION.value.get("y"),
+                drive_to.set_target(Station.ELYSE_TERMINAL.value.get("x"),
+                                    Station.ELYSE_TERMINAL.value.get("y"))
+                navigation.monitor_position(Station.ELYSE_TERMINAL.value.get("x"),
+                                            Station.ELYSE_TERMINAL.value.get("y"),
                                             self.sell_stone_and_gold_and_platin)
 
     def sell_stone_and_gold_and_platin(self):
