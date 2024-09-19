@@ -42,7 +42,7 @@ class CargoHoldAPI:
             print(str(response.json()) + f" x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
             if response.status_code == 200:
                 return response.json()
-            time.sleep(0.5)
+            time.sleep(0.4)
             retries += 1
 
     def get_structure(self):
