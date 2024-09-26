@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir flask requests
+RUN pip install --no-cache-dir flask[async] requests websockets quart hypercorn
 
 # Make port 2023 available to the world outside this container
 EXPOSE 2023
@@ -17,4 +17,4 @@ EXPOSE 2023
 ENV FLASK_ENV=production
 
 # Run app.py when the container launches
-CMD ["python3", "universal_coupler.py"]
+CMD ["hypercorn", "universal_coupler:app", "--bind", "0.0.0.0:2023"]

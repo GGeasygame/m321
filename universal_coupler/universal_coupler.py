@@ -4,8 +4,15 @@ import xmlrpc.client
 import json
 from xmlrpc.client import Binary
 import base64
+import websockets
+from quart import Quart, request, jsonify
+import asyncio
+import logging
 
-app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+app = Quart(__name__)
 
 PERMASTORE_URL = 'http://192.168.100.19:2019'
 
@@ -17,23 +24,31 @@ STATION_19_A = {"x": -15526, "y": -12527, "name": "Station 19-A"}
 SHANGRIS_STATION = {"x": 4143, "y": 4808, "name": "Shangris Station"}
 GOLD_STONE = {"x": -9800, "y": 20200, "name": "Gold Stone"}
 ARTEMIS_STATION = {"x": -20000, "y": 38000, "name": "Artemis Station"}
+ELYSE_TERMINAL = {"x": 72701, "y": -78179, "name": "Elyse Terminal"}
 
 
 @app.route('/<station_name>/receive', methods=['POST'])
-def receive_data(station_name):
+async def receive_data(station_name):
+    logger.info(f"Receive request for {station_name}")
     try:
         if station_name == ARTEMIS_STATION['name']:
             return __artemis_interface_receive(AZURA_STATION)
+        elif station_name == ELYSE_TERMINAL['name']:
+            return await __elyse_interface_receive(AZURA_STATION)
+        elif station_name == CORE_STATION['name']:
+            return __core_interface_receive(AZURA_STATION)
     except Exception as e:
+        logger.error(f"Error in receive_data: {e}")
         return {"status": "Error", "message": f"{e}"}
 
     return {"status": "Error", "message": "Station not found"}
 
 
 @app.route('/<station_name>/send', methods=['POST'])
-def send(station_name):
+async def send(station_name):
+    logger.info(f"Send request for {station_name}")
     # Extract data from the request
-    data = request.get_json(force=True)
+    data = await request.get_json(force=True)
 
     if not data or 'source' not in data or 'data' not in data:
         return {"status": "Invalid request data"}
@@ -42,6 +57,7 @@ def send(station_name):
         if station_name == AZURA_STATION['name']:
             return __azura_interface_send(data['source'], data['data'])
     except Exception as e:
+        logger.error(f"Error in send_data: {e}")
         return {"status": "Error sending data", "message": str(e)}
 
     return {"status": "Error", "message": "Station not found"}
@@ -64,6 +80,35 @@ def __artemis_interface_receive(destination_station):
             messages.append({"destination": destination_station['name'], "data": list(json_bytearray)})
     return {"kind": "success", "messages": messages}
 
+
+async def __elyse_interface_receive(destination_station):
+    server_url = "ws://192.168.100.19:2026/api"
+    messages = []
+
+    async with websockets.connect(server_url) as websocket:
+        message = await websocket.recv()
+
+        while True:
+            response_data = json.loads(message)
+            print(response_data)
+            if response_data.get("destination") == destination_station['name']:
+                messages.append({"destination": destination_station['name'], "data": list(response_data.get('msg'))})
+                break
+
+    return {"kind": "success", "messages": messages}
+
+def __core_interface_receive(destination_station):
+    received_messages = json.loads(requests.post(f"http://192.168.100.19:2027/receive").text).get(
+        "received_messages")
+    messages = []
+    for message in received_messages:
+        dest = message.get("target")
+
+        if dest == destination_station['name']:
+            msg = message.get("data")
+            decoded_bytes = base64.b64decode(msg)
+            messages.append({"destination": destination_station['name'], "data": list(decoded_bytes)})
+    return {"kind": "success", "messages": messages}
 
 def __azura_interface_send(source_station, msg):
     base64_encoded = base64.b64encode(bytearray(msg))
