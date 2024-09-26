@@ -73,3 +73,27 @@ def set_limit_normal():
         "thruster_front_left": 1,
         "laser": 1
     })
+
+def boost():
+    set_limits({
+        "scanner": 0,
+        "thruster_back": 1,
+        "thruster_front": 1,
+        "thruster_bottom_left": 1,
+        "thruster_front_right": 1,
+        "thruster_bottom_right": 1,
+        "thruster_front_left": 1,
+        "laser": 0
+    })
+
+def mine():
+    set_limits({
+        "scanner": 0,
+        "thruster_back": 0,
+        "thruster_front": 0,
+        "thruster_bottom_left": 0,
+        "thruster_front_right": 0,
+        "thruster_bottom_right": 0,
+        "thruster_front_left": 0,
+        "laser": 1
+    })
