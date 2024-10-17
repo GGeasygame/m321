@@ -88,12 +88,12 @@ def boost():
 
 def mine():
     set_limits({
-        "scanner": 0,
-        "thruster_back": 0,
-        "thruster_front": 0,
-        "thruster_bottom_left": 0,
-        "thruster_front_right": 0,
-        "thruster_bottom_right": 0,
-        "thruster_front_left": 0,
+        "scanner": 0.2,
+        "thruster_back": 0.2,
+        "thruster_front": 0.2,
+        "thruster_bottom_left": 0.2,
+        "thruster_front_right": 0.2,
+        "thruster_bottom_right": 0.2,
+        "thruster_front_left": 0.2,
         "laser": 1
     })

@@ -104,6 +104,29 @@ class AutoFarm:
                                             Station.CORE_STATION.value.get("y"),
                                             self.sell_stone_and_gold_and_platin)
 
+    def farm_fragilon(self):
+        miner = mine_meteroid.Miner(Station.FRAGILON_ROCK.value.get("name"))
+        while True:
+            request_json = self.cargo.get_cargo_hold_status()
+            self.cargo.display_status()
+
+            if request_json["hold"]["hold_free"] > 0:
+                drive_to.set_target(Station.FRAGILON_ROCK.value.get("x"), Station.FRAGILON_ROCK.value.get("y"))
+                navigation.monitor_position(Station.FRAGILON_ROCK.value.get("x"),
+                                            Station.FRAGILON_ROCK.value.get("y"),
+                                            miner.mine)
+                drive_to.set_target(Station.CORE_STATION.value.get("x"),
+                                    Station.CORE_STATION.value.get("y"))
+                navigation.monitor_position(Station.CORE_STATION.value.get("x"),
+                                            Station.CORE_STATION.value.get("y"),
+                                            self.sell_stone_and_gold_and_platin)
+            else:
+                drive_to.set_target(Station.CORE_STATION.value.get("x"),
+                                    Station.CORE_STATION.value.get("y"))
+                navigation.monitor_position(Station.CORE_STATION.value.get("x"),
+                                            Station.CORE_STATION.value.get("y"),
+                                            self.sell_stone_and_gold_and_platin)
+
     def sell_stone_and_gold_and_platin(self):
         request_json = self.cargo.get_cargo_hold_status()
         self.cargo.display_status()
