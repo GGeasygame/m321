@@ -108,6 +108,7 @@ def __core_interface_receive(destination_station):
             msg = message.get("data")
             decoded_bytes = base64.b64decode(msg)
             messages.append({"destination": destination_station['name'], "data": list(decoded_bytes)})
+    logger.info(f"core receive messages: {messages}")
     return {"kind": "success", "messages": messages}
 
 def __azura_interface_send(source_station, msg):
@@ -117,6 +118,14 @@ def __azura_interface_send(source_station, msg):
     print(data)
     requests.post(f"http://192.168.100.19:2030/put_message", json=data)
     return {"kind": "success"}
+
+def __core_interface_send(source_station, msg):
+    base64_encoded = base64.b64encode(bytearray(msg))
+    base64_string = base64_encoded.decode('utf-8')
+
+    data = {"source": source_station, "message": base64_string}
+    requests.post(f"{StationEnum.CORE.value.get_url()}send", json=data)
+
 
 
 if __name__ == '__main__':
