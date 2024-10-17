@@ -37,6 +37,8 @@ async def receive_data(station_name):
             return await __elyse_interface_receive(AZURA_STATION)
         elif station_name == CORE_STATION['name']:
             return __core_interface_receive(AZURA_STATION)
+        elif station_name == STATION_19_A['name']:
+            return __station_19_a_interface_receive()
     except Exception as e:
         logger.error(f"Error in receive_data: {e}")
         return {"status": "Error", "message": f"{e}"}
@@ -61,6 +63,14 @@ async def send(station_name):
         return {"status": "Error sending data", "message": str(e)}
 
     return {"status": "Error", "message": "Station not found"}
+
+
+def __station_19_a_interface_receive():
+    response = json.loads(requests.get("http://192.168.100.19:2034/messages_for_other_stations").text)
+    messages = []
+    for dest, base64data in response['received_messages']:
+        messages.append({"destination": dest, "data": list(base64.b64decode(base64data))})
+    return {"kind": "success", "messages": messages}
 
 
 def __artemis_interface_receive(destination_station):
@@ -124,8 +134,8 @@ def __core_interface_send(source_station, msg):
     base64_string = base64_encoded.decode('utf-8')
 
     data = {"source": source_station, "message": base64_string}
-    requests.post(f"{StationEnum.CORE.value.get_url()}send", json=data)
-
+    requests.post(f"http://192.168.100.19:2027/send", json=data)
+    return {"kind": "success"}
 
 
 if __name__ == '__main__':
