@@ -97,3 +97,60 @@ def mine():
         "thruster_front_left": 0.2,
         "laser": 1
     })
+
+def dassfg():
+    set_limits({
+        "scanner": 1,
+        "thruster_back": 1,
+        "thruster_front": 1,
+        "thruster_bottom_left": 1,
+        "thruster_front_right": 1,
+        "thruster_bottom_right": 1,
+        "thruster_front_left": 1,
+        "laser": 0,
+        "jumpdrive": 1
+    })
+    
+def jumpdrive():
+    set_limits({
+        "scanner": 0,
+        "thruster_back": 0,
+        "thruster_front": 0,
+        "thruster_bottom_left": 0,
+        "thruster_front_right": 0,
+        "thruster_bottom_right": 0,
+        "thruster_front_left": 0,
+        "cargo_bot": 0,
+        "laser": 0,
+        "jumpdrive": 0.2
+    })
+
+def scanner():
+    set_limits({
+        "scanner": 1,
+        "thruster_back": 1,
+        "thruster_front": 1,
+        "thruster_bottom_left": 1,
+        "thruster_front_right": 1,
+        "thruster_bottom_right": 1,
+        "thruster_front_left": 1,
+        "laser": 0,
+        "jumpdrive": 0
+    })
+
+def shield():
+    set_limits({
+        "scanner": 0,
+        "thruster_back": 0,
+        "thruster_front": 0,
+        "thruster_bottom_left": 0,
+        "thruster_front_right": 0,
+        "thruster_bottom_right": 0,
+        "thruster_front_left": 0,
+        "laser": 0,
+        "jumpdrive": 0,
+        "sensor_void_energy": 1,
+        "shield_generator": 1,
+        "sensor_atomic_field": 1,
+        "matter_stabilizer": 1,
+    })
