@@ -3,7 +3,7 @@ import drive_to
 
 
 def chase():
-    drive_to.set_target(36764, 22813)
+    drive_to.set_target(66564, -2182)
     follow_station.FollowStation().follow_station("Xyron Vex")
 
 
