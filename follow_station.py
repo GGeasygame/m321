@@ -16,5 +16,5 @@ class FollowStation:
         for station in json:
             if station['name'] == self.station:
                 print(f"following {self.station} with position x: {station['pos']['x']} y: {station['pos']['y']}")
-                drive_to.set_target(station['pos']['x'], station['pos']['y'])
+                drive_to.drive(station['pos']['x'], station['pos']['y'])
                 time.sleep(2)
