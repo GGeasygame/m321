@@ -31,18 +31,15 @@ ARTEMIS_STATION = {"x": -20000, "y": 38000, "name": "Artemis Station"}
 ELYSE_TERMINAL = {"x": 72701, "y": -78179, "name": "Elyse Terminal"}
 
 
-
 async def receive_stations():
     while True:
         logger.info("new receives for stations 18-a, 19-a, 20-a")
-        print("hey")
         try:
-            __station_18_a_interface_receive()
             __station_19_a_interface_receive()
-            __station_20_a_interface_receive()
         except Exception as e:
-            logger.error(e)
-        await asyncio.sleep(1)
+            logger.error(f"Error when receiving 19-A {e}")
+        await asyncio.sleep(5)
+
 
 def __station_20_a_interface_receive():
     response = requests.post(f"192.168.100.20:2023/{STATION_20_A['name']}/receive")
@@ -51,22 +48,22 @@ def __station_20_a_interface_receive():
 
 
 def __station_18_a_interface_receive():
-    response = requests.post(f"192.168.100.18:2023/{STATION_18_A['name']}/receive")
+    response = requests.post(f"http://192.168.100.18:2023/{STATION_18_A['name']}/receive")
     logger.info(f"receive Station 18: {response}")
     return response
 
 
 def __station_20_a_interface_send(source_station, message):
     data = {"source": source_station, "data": message}
-    response = requests.post(f"192.168.100.20:2023/{STATION_20_A['name']}/send", json=data)
     logger.info(f"send Station 20: {message}")
+    response = requests.post(f"http://192.168.100.20:2023/{STATION_20_A['name']}/send", json=data)
     return response
 
 
 def __station_18_a_interface_send(source_station, message):
     data = {"source": source_station, "data": message}
-    response = requests.post(f"192.168.100.18:2023/{STATION_18_A['name']}/send", json=data)
     logger.info(f"send Station 18: {message}")
+    response = requests.post(f"http://192.168.100.18:2023/{STATION_18_A['name']}/send", json=data)
     return response
 
 
@@ -80,6 +77,10 @@ async def receive_data(station_name):
             return await __elyse_interface_receive(AZURA_STATION)
         elif station_name == CORE_STATION['name']:
             return __core_interface_receive(AZURA_STATION)
+        elif station_name == AZURA_STATION['name']:
+            return __azura_interface_receive()
+        elif station_name == STATION_19_A['name']:
+            return __station_19_a_interface_receive()
     except Exception as e:
         logger.error(f"Error in receive_data: {e}")
         return {"status": "Error", "message": f"{e}"}
@@ -94,6 +95,7 @@ async def send(station_name):
     data = await request.get_json(force=True)
 
     if not data or 'source' not in data or 'data' not in data:
+        logger.error("invalid request data")
         return {"status": "Invalid request data"}
 
     try:
@@ -117,22 +119,35 @@ async def send(station_name):
 def __station_19_a_interface_receive():
     response = json.loads(requests.get("http://192.168.100.19:2034/messages_for_other_stations").text)
     messages = []
-    for dest, base64data in response['received_messages']:
+    for msg in response['received_messages']:
+        dest = msg['dest']
+        base64data = msg['base64data']
+        logger.debug(f"destination {dest} data {base64data}")
         messages.append({"destination": dest, "data": list(base64.b64decode(base64data))})
     for message in messages:
         logger.info(f"receive Station 19: {message}")
         data = {"source": STATION_19_A['name'], "data": message['data']}
-        return requests.post(f"127.0.0.1/{message['destination']}/send", data=data)
+        if message['destination'] == STATION_18_A['name']:
+            __station_18_a_interface_send(data['source'], data['data'])
+        elif message['destination'] == STATION_20_A['name']:
+            __station_20_a_interface_send(data['source'], data['data'])
+    return {"kind": "failed"}
+
 
 def __azura_interface_receive():
     response = json.loads(requests.get("http://192.168.100.19:2030/messages_for_other_stations").text)
     messages = []
-    for dest, base64data in response['received_messages']:
-        messages.append({"destination": dest, "data": list(base64.b64decode(base64data))})
+    for response in response['received_messages']:
+        base64data = response['base64data']
+        dest = response['dest']
+        # encoded = list(base64.b64decode(base64data))
+        messages.append({"destination": dest, "data": base64data})
     for message in messages:
-        logger.info(f"receive Station 19: {message}")
-        data = {"source": STATION_19_A['name'], "data": message['data']}
-        return data
+        logger.info(f"receive Azura Station: {message}")
+        # data = {"source": AZURA_STATION['name'], "data": message['data']}
+        __core_interface_send(AZURA_STATION['name'], message)
+    return {"kind": "success", "messages": messages}
+
 
 
 def __artemis_interface_receive(destination_station):
@@ -174,19 +189,21 @@ def __core_interface_receive(destination_station):
         "received_messages")
     messages = []
     for message in received_messages:
-        dest = message.get("target")
+        dest = message["target"]
 
         if dest == destination_station['name']:
-            msg = message.get("data")
+            msg = message["data"]
             logger.debug(f"core receive message {msg}")
-            decoded_bytes = list(base64.b64decode(msg))
+            # decoded_bytes = list(base64.b64decode(msg))
             messages.append({"destination": destination_station['name'], "data": msg})
+            __azura_interface_send(CORE_STATION['name'], msg)
     logger.info(f"core receive messages: {messages}")
     return {"kind": "success", "messages": messages}
 
 
 def __station_19_a_interface_send(source_station, msg):
-    base64_encoded = base64.b64encode(bytearray(msg.encode('utf-8')))
+    logger.info(f"Station 19-A message before transformation {msg}")
+    base64_encoded = base64.b64encode(bytearray(msg))
     base64_string = base64_encoded.decode('utf-8')
     data = {"sending_station": source_station, "base64data": base64_string}
     logger.info(f"{source_station} send to station-19-a messages: {base64_string} ({msg})")
@@ -195,20 +212,22 @@ def __station_19_a_interface_send(source_station, msg):
 
 
 def __azura_interface_send(source_station, msg):
-    base64_encoded = base64.b64encode(bytearray(msg))
-    base64_string = base64_encoded.decode('utf-8')
-    data = {"sending_station": source_station, "base64data": base64_string}
+    # base64_encoded = base64.b64encode(bytearray(msg))
+    # base64_string = base64_encoded.decode('utf-8')
+    data = {"sending_station": source_station, "base64data": msg}
     requests.post(f"http://192.168.100.19:2030/put_message", json=data)
-    logger.info(f"azura send messages: {base64_string} ({msg})")
+    # logger.info(f"azura send messages: {base64_string} ({msg})")
+    logger.info(f"azura send messages: {msg}")
     return {"kind": "success"}
 
 def __core_interface_send(source_station, msg):
-    base64_encoded = base64.b64encode(bytearray(msg))
-    base64_string = base64_encoded.decode('utf-8')
+    # base64_encoded = base64.b64encode(bytearray(msg))
+    # base64_string = base64_encoded.decode('utf-8')
 
-    data = {"source": source_station, "message": base64_string}
+    data = {"source": source_station, "message": msg}
     requests.post(f"http://192.168.100.19:2027/send", json=data)
-    logger.info(f"core send messages: {base64_string} ({msg})")
+    # logger.info(f"core send messages: {base64_string} ({msg})")
+    logger.info(f"core send messages: {msg}")
     return {"kind": "success"}
 
 

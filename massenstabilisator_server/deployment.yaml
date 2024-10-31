@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: massenstabilisator-server
+  namespace: theship-vendor
+  labels:
+    app: massenstabilisator-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: massenstabilisator-server
+  template:
+    metadata:
+      labels:
+        app: massenstabilisator-server
+    spec:
+      containers:
+      - name: massenstabilisator-server-container
+        image: ggeasygame/massenstabilisator_server:latest
+        ports:
+        - containerPort: 2101
+        env:
+        - name: FLASK_ENV
+          value: production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: massenstabilisator-server-service
+  namespace: theship-vendor
+spec:
+  selector:
+    app: massenstabilisator-server
+  ports:
+    - protocol: TCP
+      port: 2101
+      targetPort: 2101
+  type: LoadBalancer  # Change to ClusterIP if you only need internal access
