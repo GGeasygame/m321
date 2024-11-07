@@ -19,5 +19,6 @@ class Station(Enum):
     CHRON = {"x": 40000, "y": 53034, "name": "Chron"}
     NUKU_STATION = {"x": -94108, "y": 95822, "name": "Nuku Station"}
     XYRON_VEX = {"x": 21040, "y": -29944, "name": "Xyron Vex"}
-    FRAGILON_ROCK = {"x": 44536, "y": -53811, "name": "Fragilon Rock"}
+    FRAGILON_ROCK = {"x": 44436, "y": -53711, "name": "Fragilon Rock"}
     RELIEF_STATION = {"x": 150000, "y": 150000, "name": "Relief Station"}
+    MAGNON_ROCK = {"x": -40662, "y": -51638, "name": "Magnon Rock"}
