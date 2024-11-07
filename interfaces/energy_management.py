@@ -1,6 +1,5 @@
 import requests
 import json
-import interfaces.thrusters as thrusters
 
 def get_status_node1():
     response = requests.get('http://192.168.100.19:2032/status')
@@ -50,17 +49,17 @@ def set_limits(new_limits):
         return None
 
 def reduce_limit_for_thrusters():
-    if thrusters.check_all_thrusters_zero():
-        set_limits({
-                "scanner": 0.3,
-                "thruster_back": 0.0,
-                "thruster_front": 0.0,
-                "thruster_bottom_left": 0.0,
-                "thruster_front_right": 0.0,
-                "thruster_bottom_right": 0.0,
-                "thruster_front_left": 0.0,
-                "laser": 1
-                })
+    #if thrusters.check_all_thrusters_zero():
+    set_limits({
+            "scanner": 0.3,
+            "thruster_back": 0.0,
+            "thruster_front": 0.0,
+            "thruster_bottom_left": 0.0,
+            "thruster_front_right": 0.0,
+            "thruster_bottom_right": 0.0,
+            "thruster_front_left": 0.0,
+            "laser": 1
+            })
 
 def set_limit_normal():
     set_limits({

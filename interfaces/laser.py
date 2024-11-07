@@ -1,4 +1,6 @@
 import requests
+import time
+import energy_management as energy
 
 
 def activate():
@@ -40,5 +42,22 @@ def setup_keycloak():
         return None, str(e)
 
 
-print(setup_keycloak())
-
+energy.set_limits({
+    "scanner": 0,
+    "thruster_back": 1,
+    "thruster_front": 1,
+    "thruster_bottom_left": 1,
+    "thruster_front_right": 1,
+    "thruster_bottom_right": 1,
+    "thruster_front_left": 1,
+    "laser": 1,
+    "jumpdrive": 0,
+    "sensor_void_energy": 0,
+    "shield_generator": 0,
+    "sensor_atomic_field": 0,
+    "matter_stabilizer": 0,
+    "cargo_bot": 1,
+})
+activate()
+time.sleep(1)
+requests.post("http://192.168.100.19:2018/deactivate")

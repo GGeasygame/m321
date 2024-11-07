@@ -45,7 +45,7 @@ class CargoHoldAPI:
             time.sleep(0.4)
             retries += 1
 
-    def get_structure(self):
+    async def get_structure(self) -> str:
         url = f"{self.base_url}/structure"
         return requests.get(url).json()
 

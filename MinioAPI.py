@@ -173,7 +173,7 @@ async def receive(source_station_name):
             return __core_interface_receive(StationEnum.AZURA.value)
         case StationEnum.AZURA:
             return __azura_interface_receive(StationEnum.CORE.value)
-        case StationEnum.AURORA:
+        case StationEnum.AURORA_STATION:
             return __aurora_interface_receive(StationEnum.AZURA.value)
     return {"kind": "success"}
 
